@@ -1,11 +1,11 @@
-const express = require('express');
-const router = express.Router();
-const Passenger = require('./models/Passenger');
-const TaxiBoss = require('./models/TaxiBoss');
-const Driver = require('./models/Driver');
-const Taxi = require('./models/Taxi');
-const Route = require('./models/Route');
-const Trip = require('./models/Trip')
+import { Router } from 'express';
+const router = Router();
+import Passenger from './models/Passenger';
+import TaxiBoss from './models/TaxiBoss';
+import Driver from './models/Driver';
+import Taxi from './models/Taxi';
+import Route from './models/Route';
+import Trip from './models/Trip';
 
 // Create a new passenger
 router.post('/passenger', async (req, res) => {
@@ -87,4 +87,4 @@ router.post('/trip', async (req, res) => {
 });
 
 
-module.exports = router;
+export default router;

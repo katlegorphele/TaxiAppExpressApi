@@ -6,8 +6,8 @@ const tripSchema = new _Schema({
 	taxiId: {type: Schema.Types.ObjectId, ref: 'Taxi', required: true},
 	route: {type: Schema.Types.ObjectId, ref:'Route', required: true},
 	cost: {type: Number, required: true},
-    paymentStatus: {type: String, enum: ['paid','pending','failed'], default: 'pending'}
-	//timestamp:{type:Date, default: Date.now}
+    // paymentStatus: {type: String, enum: ['paid','pending','failed'], default: 'pending'}
+	timestamp:{type:Date, default: Date.now}
 });
 
 
