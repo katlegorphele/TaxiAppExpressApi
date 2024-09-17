@@ -8,6 +8,7 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 const PORT = process.env.PORT || 3001;
 const MONGO_URI = process.env.MONGO_URI;
+import { specs, swaggerUi } from './swagger.js';
 
 
 //import routes
@@ -24,6 +25,8 @@ app.prepare().then(() => {
 
   // Middleware
   server.use(json());
+  // Generate swagger-ui ui
+  server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
   //API Routes
   server.use('/api',apiRoutes);
