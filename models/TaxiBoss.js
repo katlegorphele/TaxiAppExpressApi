@@ -1,10 +1,12 @@
 import mongoose, { model } from "mongoose";
-const {Schema} = mongoose;
+const { Schema } = mongoose;
 
-const taxiBossSchema = new Schema({
-    name: {type: String, required: true},
-    walletAddress: {type: String, required: true},
-    fleet: [{type: Schema.Types.ObjectId, ref: 'Taxi'}]
+const taxiOwnerSchema = new Schema({
+    walletAddress: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
+    phone: { type: String, required: true },
+    taxis: [{ type: mongoose.Schema.Types.ObjectId, ref: "Taxi" }],
+    routes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Route" }],
 });
 
-export default model("TaxiBoss",taxiBossSchema);
+export default model("TaxiBoss", taxiOwnerSchema);
