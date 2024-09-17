@@ -15,7 +15,9 @@ const Home = () => {
           </Link>
          
           {/* Other links can go here */}
-          
+          <Link href="/create-driver">
+              Create Driver
+          </Link>
         </div>
       </div>
     </div>
