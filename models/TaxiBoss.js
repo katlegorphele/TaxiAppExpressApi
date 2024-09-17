@@ -9,4 +9,4 @@ const taxiOwnerSchema = new Schema({
     routes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Route" }],
 });
 
-export default model("TaxiBoss", taxiOwnerSchema);
+export default model("TaxiOwner", taxiOwnerSchema);
