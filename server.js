@@ -11,7 +11,7 @@ const MONGO_URI = process.env.MONGO_URI;
 
 
 //import routes
-import apiRoutes from './apiRoutes';
+import apiRoutes from './apiRoutes.js';
 
 // Connect to MongoDB
 connect(MONGO_URI)

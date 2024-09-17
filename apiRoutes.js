@@ -1,11 +1,11 @@
 import { Router } from 'express';
 const router = Router();
-import Passenger from './models/Passenger';
-import TaxiOwner from './models/TaxiBoss';
-import Driver from './models/Driver';
-import Taxi from './models/Taxi';
-import Route from './models/Route';
-import Trip from './models/Trip';
+import Passenger from './models/Passenger.js';
+import TaxiOwner from './models/TaxiBoss.js';
+import Driver from './models/Driver.js';
+import Taxi from './models/Taxi.js';
+import Route from './models/Route.js';
+import Trip from './models/Trip.js';
 
 // Create a new passenger
 router.post('/passenger', async (req, res) => {
