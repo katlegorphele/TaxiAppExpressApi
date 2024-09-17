@@ -2,10 +2,9 @@
 
 import { useState } from 'react';
 
-const CreateDriver = () => {
+const CreateTaxiOwner = () => {
   const [name, setName] = useState('');
   const [walletAddress, setWalletAddress] = useState('');
-  const [taxiId, setTaxiId] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -20,21 +19,20 @@ const CreateDriver = () => {
     setLoading(true);
 
     // Prepare the data to be sent
-    const driverData = {
+    const taxiOwnerData = {
       name,
       walletAddress,
-      taxiId,
       phoneNumber, // Include phone number
     };
 
     try {
       // Make the POST request
-      const response = await fetch('http://localhost:3001/api/driver', {
+      const response = await fetch('http://localhost:3001/api/taxiowner', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(driverData),
+        body: JSON.stringify(taxiOwnerData),
       });
 
       // Handle the response
@@ -42,11 +40,11 @@ const CreateDriver = () => {
         setSuccess(true);
         setName('');
         setWalletAddress('');
-        setTaxiId('');
         setPhoneNumber(''); // Clear phone number
       } else {
         const errorResponse = await response.json();
-        setError(errorResponse.message || 'Failed to create driver');
+        console.log(errorResponse);
+        setError(errorResponse.message || 'Failed to create taxi owner');
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
@@ -58,7 +56,7 @@ const CreateDriver = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center text-black">
       <div className="bg-white p-10 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center mb-4">Create Driver</h1>
+        <h1 className="text-2xl font-bold text-center mb-4">Create Taxi Owner</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block mb-2">Name:</label>
@@ -81,16 +79,6 @@ const CreateDriver = () => {
             />
           </div>
           <div>
-            <label className="block mb-2">Taxi Id:</label>
-            <input
-              type="email"
-              value={taxiId}
-              onChange={(e) => setTaxiId(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md"
-              required
-            />
-          </div>
-          <div>
             <label className="block mb-2">Phone Number:</label>
             <input
               type="text"
@@ -102,7 +90,7 @@ const CreateDriver = () => {
           </div>
           {loading && <p className="text-blue-500">Submitting...</p>}
           {error && <p className="text-red-500">{error}</p>}
-          {success && <p className="text-green-500">Driver created successfully!</p>}
+          {success && <p className="text-green-500">Passenger created successfully!</p>}
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-700"
@@ -116,4 +104,4 @@ const CreateDriver = () => {
   );
 };
 
-export default CreateDriver;
+export default CreateTaxiOwner;

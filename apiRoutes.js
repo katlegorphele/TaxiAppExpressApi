@@ -797,11 +797,11 @@ router.get('/taxiowner/:walletAddress', async (req, res) => {
  *                 description: The ID of the route
  *               type:
  *                 type: string
- *                 example: "Sedan"
+ *                 example: "Quantum"
  *                 description: The type of the taxi
  *               numberOfSeats:
  *                 type: integer
- *                 example: 4
+ *                 example: 15
  *                 description: The number of seats in the taxi
  *             required:
  *               - licensePlate
@@ -834,10 +834,10 @@ router.get('/taxiowner/:walletAddress', async (req, res) => {
  *                   example: "64b2d5f3429a1c6a8f99a2f7"
  *                 type:
  *                   type: string
- *                   example: "Sedan"
+ *                   example: "Quantum"
  *                 numberOfSeats:
  *                   type: integer
- *                   example: 4
+ *                   example: 15
  *       500:
  *         description: An error occurred while creating the taxi
  *         content:
