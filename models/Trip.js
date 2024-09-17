@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
+import mongoose, { Schema as _Schema, model } from 'mongoose';
 const {Schema} = mongoose;
 
-const tripSchema = new mongoose.Schema({
+const tripSchema = new _Schema({
 	passengerId: {type: Schema.Types.ObjectId, ref:'Passenger', required: true},
 	taxiId: {type: Schema.Types.ObjectId, ref: 'Taxi', required: true},
 	route: {type: Schema.Types.ObjectId, ref:'Route', required: true},
@@ -11,4 +11,4 @@ const tripSchema = new mongoose.Schema({
 });
 
 
-module.exports = mongoose.model('Trip',tripSchema);
+export default model('Trip',tripSchema);

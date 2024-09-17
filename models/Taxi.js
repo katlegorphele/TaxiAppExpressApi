@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose, { model } from 'mongoose';
 const {Schema} = mongoose;
 
 const taxiSchema = new Schema ({
@@ -11,4 +11,4 @@ const taxiSchema = new Schema ({
     routeId: {type: Schema.Types.ObjectId, ref:'Route'}
 });
 
-module.exports = mongoose.model("Taxi",taxiSchema);
+export default model("Taxi",taxiSchema);

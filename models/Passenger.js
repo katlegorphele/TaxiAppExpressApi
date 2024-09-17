@@ -1,11 +1,13 @@
-const mongoose = require("mongoose");
+import mongoose, { model } from "mongoose";
 const {Schema} = mongoose;
 
 const passengerSchema = new Schema({
     walletAddress: {type: String, required: true, unique: true},
     name:{type: String, required: true},
-    email: {type: String, required: true, unique: true}
+    email: {type: String, required: true, unique: true},
+    phone: { type: String, required: true },
+    trips: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Trip' }]
 
 });
 
-module.exports = mongoose.model("Passenger",passengerSchema);
+export default model("Passenger",passengerSchema);

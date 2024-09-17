@@ -1,4 +1,4 @@
-const mongoose = require ("mongoose");
+import mongoose, { model } from "mongoose";
 const {Schema} = mongoose;
 
 const taxiBossSchema = new Schema({
@@ -7,4 +7,4 @@ const taxiBossSchema = new Schema({
     fleet: [{type: Schema.Types.ObjectId, ref: 'Taxi'}]
 });
 
-module.exports = mongoose.model("TaxiBoss",taxiBossSchema);
+export default model("TaxiBoss",taxiBossSchema);

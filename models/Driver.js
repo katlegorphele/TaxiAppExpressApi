@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose, { model } from 'mongoose';
 const {Schema} = mongoose;
 
 const driverSchema = new Schema({
@@ -7,4 +7,4 @@ const driverSchema = new Schema({
     phoneNumber: {type: String, required: true}
 });
 
-module.exports = mongoose.model("Driver", driverSchema);
+export default model("Driver", driverSchema);
