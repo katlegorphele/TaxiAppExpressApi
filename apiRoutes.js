@@ -553,7 +553,226 @@ router.post('/taxiowner', async (req, res) => {
     }
 });
 
+// Get all taxi owners
+/**
+ * @swagger
+ * tags:
+ *   name: TaxiOwner
+ *   description: API endpoints for managing taxi owners
+ *
+ * /api/taxiowners:
+ *   get:
+ *     summary: Get all taxi owners
+ *     tags: [TaxiOwner]
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the list of taxi owners
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: "605c72ef1f1b2c001f8b4567"
+ *                     description: The unique ID of the taxi owner
+ *                   name:
+ *                     type: string
+ *                     example: "John Smith"
+ *                     description: The name of the taxi owner
+ *                   walletAddress:
+ *                     type: string
+ *                     example: "0xabcdef1234567890abcdef1234567890abcdef12"
+ *                     description: The wallet address of the taxi owner
+ *                   phoneNumber:
+ *                     type: string
+ *                     example: "+1234567890"
+ *                     description: The phone number of the taxi owner
+ *       500:
+ *         description: An error occurred while fetching taxi owners
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to fetch Taxi Bosses"
+ */
+router.get('/taxiowners', async (req, res) => {
+    try {
+        const taxiOwners = await TaxiOwner.find();
+        res.status(200).json(taxiOwners);
+    } catch (err) {
+        console.error("Error fetching Taxi Bosses",err);
+        res.status(500).json({error: "Failed to fetch Taxi Bosses"});
+    }
+});
+
+// Get taxi owner by walletAddress
+/**
+ * @swagger
+ * tags:
+ *   name: TaxiOwner
+ *   description: API endpoints for managing taxi owners
+ *
+ * /api/taxiowner/{walletAddress}:
+ *   get:
+ *     summary: Get a taxi owner by wallet address
+ *     tags: [TaxiOwner]
+ *     parameters:
+ *       - in: path
+ *         name: walletAddress
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The wallet address of the taxi owner to retrieve
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the taxi owner
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   example: "605c72ef1f1b2c001f8b4567"
+ *                   description: The unique ID of the taxi owner
+ *                 name:
+ *                   type: string
+ *                   example: "John Smith"
+ *                   description: The name of the taxi owner
+ *                 walletAddress:
+ *                   type: string
+ *                   example: "0xabcdef1234567890abcdef1234567890abcdef12"
+ *                   description: The wallet address of the taxi owner
+ *                 phoneNumber:
+ *                   type: string
+ *                   example: "+1234567890"
+ *                   description: The phone number of the taxi owner
+ *       404:
+ *         description: Taxi owner not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Taxi Boss not found"
+ *       500:
+ *         description: An error occurred while fetching the taxi owner
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to fetch Taxi Boss"
+ */
+router.get('/taxiowner/:walletAddress', async (req, res) => {
+    try {
+        const walletAddress = req.params.walletAddress;
+        const taxiOwner = await TaxiOwner
+        .findOne({walletAddress: walletAddress});
+        if (!taxiOwner) {
+            return res.status(404).json({error: "Taxi Boss not found"});
+        }
+        res.status(200).json(taxiOwner);
+    } catch (err) {
+        console.error("Error fetching Taxi Boss",err);
+        res.status(500).json({error: "Failed to fetch Taxi Boss"});
+    }
+});
+
 //Create a new taxi
+/**
+ * @swagger
+ * tags:
+ *   name: Taxi
+ *   description: API endpoints for managing taxis
+ *
+ * /api/taxi:
+ *   post:
+ *     summary: Create a new taxi
+ *     tags: [Taxi]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               licensePlate:
+ *                 type: string
+ *                 example: "ABC1234"
+ *                 description: The license plate of the taxi
+ *               taxiOwnerId:
+ *                 type: string
+ *                 example: "605c72ef1f1b2c001f8b4567"
+ *                 description: The unique ID of the taxi owner
+ *               routeId:
+ *                 type: string
+ *                 example: "605c72ef1f1b2c001f8b4568"
+ *                 description: The unique ID of the route the taxi operates on
+ *               driverId:
+ *                 type: string
+ *                 example: "605c72ef1f1b2c001f8b4569"
+ *                 description: The unique ID of the driver assigned to the taxi
+ *               type:
+ *                 type: string
+ *                 example: "Sedan"
+ *                 description: The type of the taxi
+ *               numberOfSeats:
+ *                 type: integer
+ *                 example: 4
+ *                 description: The number of seats in the taxi
+ *     responses:
+ *       201:
+ *         description: Successfully created a new taxi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   example: "605c72ef1f1b2c001f8b4567"
+ *                   description: The unique ID of the newly created taxi
+ *                 licensePlate:
+ *                   type: string
+ *                   example: "ABC1234"
+ *                 taxiOwnerId:
+ *                   type: string
+ *                   example: "605c72ef1f1b2c001f8b4567"
+ *                 routeId:
+ *                   type: string
+ *                   example: "605c72ef1f1b2c001f8b4568"
+ *                 driverId:
+ *                   type: string
+ *                   example: "605c72ef1f1b2c001f8b4569"
+ *                 type:
+ *                   type: string
+ *                   example: "Sedan"
+ *                 numberOfSeats:
+ *                   type: integer
+ *                   example: 4
+ *       500:
+ *         description: An error occurred while creating the taxi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to create a new taxi"
+ */
+
 router.post('/taxi', async (req, res) => {
     try{
         const {licensePlate, taxiOwnerId, routeId, driverId, type, numberOfSeats} = req.body;
@@ -567,6 +786,77 @@ router.post('/taxi', async (req, res) => {
 });
 
 // Create a new route
+/**
+ * @swagger
+ * tags:
+ *   name: Route
+ *   description: API endpoints for managing routes
+ *
+ * /api/route:
+ *   post:
+ *     summary: Create a new route
+ *     tags: [Route]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               startPoint:
+ *                 type: string
+ *                 example: "Downtown"
+ *                 description: The starting point of the route
+ *               endPoint:
+ *                 type: string
+ *                 example: "Airport"
+ *                 description: The ending point of the route
+ *               price:
+ *                 type: number
+ *                 format: float
+ *                 example: 25.5
+ *                 description: The price of the route
+ *               taxiOwnerId:
+ *                 type: string
+ *                 example: "605c72ef1f1b2c001f8b4567"
+ *                 description: The unique ID of the taxi owner
+ *     responses:
+ *       201:
+ *         description: Successfully created a new route
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   example: "605c72ef1f1b2c001f8b4567"
+ *                   description: The unique ID of the newly created route
+ *                 startPoint:
+ *                   type: string
+ *                   example: "Downtown"
+ *                 endPoint:
+ *                   type: string
+ *                   example: "Airport"
+ *                 price:
+ *                   type: number
+ *                   format: float
+ *                   example: 25.5
+ *                 taxiOwnerId:
+ *                   type: string
+ *                   example: "605c72ef1f1b2c001f8b4567"
+ *       500:
+ *         description: An error occurred while creating the route
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to create route"
+ */
+
 router.post('/route', async (req, res) => {
     try {
         const {startPoint, endPoint, price, taxiOwnerId} = req.body;
@@ -580,6 +870,77 @@ router.post('/route', async (req, res) => {
 });
 
 // Create a new trip
+/**
+ * @swagger
+ * tags:
+ *   name: Trip
+ *   description: API endpoints for managing trips
+ *
+ * /api/trip:
+ *   post:
+ *     summary: Create a new trip
+ *     tags: [Trip]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               passengerId:
+ *                 type: string
+ *                 example: "605c72ef1f1b2c001f8b4567"
+ *                 description: The unique ID of the passenger
+ *               taxiId:
+ *                 type: string
+ *                 example: "605c72ef1f1b2c001f8b4568"
+ *                 description: The unique ID of the taxi
+ *               routeId:
+ *                 type: string
+ *                 example: "605c72ef1f1b2c001f8b4569"
+ *                 description: The unique ID of the route
+ *               cost:
+ *                 type: number
+ *                 format: float
+ *                 example: 15.75
+ *                 description: The cost of the trip
+ *     responses:
+ *       201:
+ *         description: Successfully created a new trip
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   example: "605c72ef1f1b2c001f8b4570"
+ *                   description: The unique ID of the newly created trip
+ *                 passengerId:
+ *                   type: string
+ *                   example: "605c72ef1f1b2c001f8b4567"
+ *                 taxiId:
+ *                   type: string
+ *                   example: "605c72ef1f1b2c001f8b4568"
+ *                 routeId:
+ *                   type: string
+ *                   example: "605c72ef1f1b2c001f8b4569"
+ *                 cost:
+ *                   type: number
+ *                   format: float
+ *                   example: 15.75
+ *       500:
+ *         description: An error occurred while creating the trip
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to create trip"
+ */
+
 router.post('/trip', async (req, res) => {
     try{
         const {passengerId, taxiId, routeId, cost} = req.body;
