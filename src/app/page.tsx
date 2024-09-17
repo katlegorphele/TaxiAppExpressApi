@@ -13,8 +13,9 @@ const Home = () => {
               Create Passenger
             
           </Link>
-          
+         
           {/* Other links can go here */}
+          
         </div>
       </div>
     </div>
