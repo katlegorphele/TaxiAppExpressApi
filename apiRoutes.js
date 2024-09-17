@@ -29,7 +29,7 @@ router.get('/hello', (req, res) => {
  * tags:
  *   name: Passenger
  *   description: API endpoints for managing passengers
- * 
+ *
  * /api/passenger:
  *   post:
  *     summary: Create a new passenger
@@ -57,6 +57,11 @@ router.get('/hello', (req, res) => {
  *                 type: string
  *                 example: "+1234567890"
  *                 description: The phone number of the passenger
+ *             required:
+ *               - name
+ *               - walletAddress
+ *               - email
+ *               - phoneNumber
  *     responses:
  *       201:
  *         description: Successfully created a new passenger
@@ -78,9 +83,15 @@ router.get('/hello', (req, res) => {
  *                 email:
  *                   type: string
  *                   example: "johndoe@example.com"
- *                 phone:
+ *                 phoneNumber:
  *                   type: string
  *                   example: "+1234567890"
+ *                 trips:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: []
+ *                   description: List of trip IDs associated with the passenger
  *       500:
  *         description: An error occurred while creating the passenger
  *         content:
@@ -118,7 +129,7 @@ router.post('/passenger', async (req, res) => {
  *     tags: [Passenger]
  *     responses:
  *       200:
- *         description: Successfully retrieved the list of passengers
+ *         description: A list of all passengers
  *         content:
  *           application/json:
  *             schema:
@@ -133,19 +144,21 @@ router.post('/passenger', async (req, res) => {
  *                   name:
  *                     type: string
  *                     example: "John Doe"
- *                     description: The name of the passenger
  *                   walletAddress:
  *                     type: string
  *                     example: "0x1234567890abcdef1234567890abcdef12345678"
- *                     description: The wallet address of the passenger
  *                   email:
  *                     type: string
  *                     example: "johndoe@example.com"
- *                     description: The email address of the passenger
  *                   phoneNumber:
  *                     type: string
  *                     example: "+1234567890"
- *                     description: The phone number of the passenger
+ *                   trips:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example: []
+ *                     description: List of trip IDs associated with the passenger
  *       500:
  *         description: An error occurred while fetching passengers
  *         content:
@@ -179,15 +192,15 @@ router.get('/passengers', async (req, res) => {
  *     summary: Get a passenger by wallet address
  *     tags: [Passenger]
  *     parameters:
- *       - in: path
- *         name: walletAddress
+ *       - name: walletAddress
+ *         in: path
  *         required: true
  *         schema:
  *           type: string
  *         description: The wallet address of the passenger to retrieve
  *     responses:
  *       200:
- *         description: Successfully retrieved the passenger
+ *         description: A single passenger record
  *         content:
  *           application/json:
  *             schema:
@@ -200,19 +213,21 @@ router.get('/passengers', async (req, res) => {
  *                 name:
  *                   type: string
  *                   example: "John Doe"
- *                   description: The name of the passenger
  *                 walletAddress:
  *                   type: string
  *                   example: "0x1234567890abcdef1234567890abcdef12345678"
- *                   description: The wallet address of the passenger
  *                 email:
  *                   type: string
  *                   example: "johndoe@example.com"
- *                   description: The email address of the passenger
  *                 phoneNumber:
  *                   type: string
  *                   example: "+1234567890"
- *                   description: The phone number of the passenger
+ *                 trips:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: []
+ *                   description: List of trip IDs associated with the passenger
  *       404:
  *         description: Passenger not found
  *         content:
@@ -234,6 +249,7 @@ router.get('/passengers', async (req, res) => {
  *                   type: string
  *                   example: "Failed to fetch passenger"
  */
+
 router.get('/passenger/:walletAddress', async (req, res) => {
     try {
         const walletAddress = req.params.walletAddress;
@@ -269,12 +285,12 @@ router.get('/passenger/:walletAddress', async (req, res) => {
  *             properties:
  *               name:
  *                 type: string
- *                 example: "Alice Johnson"
+ *                 example: "Jane Doe"
  *                 description: The name of the driver
  *               walletAddress:
  *                 type: string
  *                 example: "0xabcdef1234567890abcdef1234567890abcdef12"
- *                 description: The wallet address of the driver
+ *                 description: The unique wallet address of the driver
  *               phoneNumber:
  *                 type: string
  *                 example: "+1234567890"
@@ -283,6 +299,10 @@ router.get('/passenger/:walletAddress', async (req, res) => {
  *                 type: string
  *                 example: "605c72ef1f1b2c001f8b4567"
  *                 description: The ID of the taxi assigned to the driver
+ *             required:
+ *               - name
+ *               - walletAddress
+ *               - phoneNumber
  *     responses:
  *       201:
  *         description: Successfully created a new driver
@@ -297,16 +317,17 @@ router.get('/passenger/:walletAddress', async (req, res) => {
  *                   description: The unique ID of the newly created driver
  *                 name:
  *                   type: string
- *                   example: "Alice Johnson"
+ *                   example: "Jane Doe"
  *                 walletAddress:
  *                   type: string
  *                   example: "0xabcdef1234567890abcdef1234567890abcdef12"
- *                 phoneNumber:
+ *                 phone:
  *                   type: string
  *                   example: "+1234567890"
- *                 taxiId:
+ *                 taxi:
  *                   type: string
  *                   example: "605c72ef1f1b2c001f8b4567"
+ *                   description: The ID of the taxi assigned to the driver
  *       500:
  *         description: An error occurred while creating the driver
  *         content:
@@ -318,11 +339,14 @@ router.get('/passenger/:walletAddress', async (req, res) => {
  *                   type: string
  *                   example: "Failed to create driver"
  */
-
 router.post("/driver",  async (req, res) => {
     try{
         const {name, walletAddress, phoneNumber, taxiId} = req.body;
-        const newDriver = new Driver({name, walletAddress, phoneNumber, taxiId});
+        // Check if all required fields are provided
+        if (!name || !walletAddress || !phoneNumber) {
+            return res.status(400).json({ error: "Name, walletAddress, and phoneNumber are required" });
+        }
+        const newDriver = new Driver({name, walletAddress, phone:phoneNumber, taxi:taxiId});
         const savedDriver = await newDriver.save();
         res.status(201).json(savedDriver);
     } catch (err) {
@@ -337,14 +361,14 @@ router.post("/driver",  async (req, res) => {
  * tags:
  *   name: Driver
  *   description: API endpoints for managing drivers
- *
+ * 
  * /api/drivers:
  *   get:
- *     summary: Get all drivers
+ *     summary: Retrieve a list of all drivers
  *     tags: [Driver]
  *     responses:
  *       200:
- *         description: Successfully retrieved the list of drivers
+ *         description: A successful response containing a list of drivers
  *         content:
  *           application/json:
  *             schema:
@@ -356,24 +380,24 @@ router.post("/driver",  async (req, res) => {
  *                     type: string
  *                     example: "605c72ef1f1b2c001f8b4567"
  *                     description: The unique ID of the driver
- *                   name:
- *                     type: string
- *                     example: "Alice Johnson"
- *                     description: The name of the driver
  *                   walletAddress:
  *                     type: string
- *                     example: "0xabcdef1234567890abcdef1234567890abcdef12"
+ *                     example: "0x1234567890abcdef1234567890abcdef12345678"
  *                     description: The wallet address of the driver
- *                   phoneNumber:
+ *                   name:
+ *                     type: string
+ *                     example: "John Doe"
+ *                     description: The name of the driver
+ *                   phone:
  *                     type: string
  *                     example: "+1234567890"
  *                     description: The phone number of the driver
- *                   taxiId:
+ *                   taxi:
  *                     type: string
- *                     example: "605c72ef1f1b2c001f8b4567"
- *                     description: The ID of the taxi assigned to the driver
+ *                     example: "605c72ef1f1b2c001f8b4568"
+ *                     description: The ID of the associated taxi
  *       500:
- *         description: An error occurred while fetching drivers
+ *         description: An error occurred while fetching the drivers
  *         content:
  *           application/json:
  *             schema:
@@ -399,10 +423,10 @@ router.get('/drivers', async (req, res) => {
  * tags:
  *   name: Driver
  *   description: API endpoints for managing drivers
- *
+ * 
  * /api/driver/{walletAddress}:
  *   get:
- *     summary: Get a driver by wallet address
+ *     summary: Retrieve a driver by wallet address
  *     tags: [Driver]
  *     parameters:
  *       - in: path
@@ -413,7 +437,7 @@ router.get('/drivers', async (req, res) => {
  *         description: The wallet address of the driver to retrieve
  *     responses:
  *       200:
- *         description: Successfully retrieved the driver
+ *         description: A successful response containing the driver information
  *         content:
  *           application/json:
  *             schema:
@@ -423,22 +447,22 @@ router.get('/drivers', async (req, res) => {
  *                   type: string
  *                   example: "605c72ef1f1b2c001f8b4567"
  *                   description: The unique ID of the driver
- *                 name:
- *                   type: string
- *                   example: "Alice Johnson"
- *                   description: The name of the driver
  *                 walletAddress:
  *                   type: string
- *                   example: "0xabcdef1234567890abcdef1234567890abcdef12"
+ *                   example: "0x1234567890abcdef1234567890abcdef12345678"
  *                   description: The wallet address of the driver
- *                 phoneNumber:
+ *                 name:
+ *                   type: string
+ *                   example: "John Doe"
+ *                   description: The name of the driver
+ *                 phone:
  *                   type: string
  *                   example: "+1234567890"
  *                   description: The phone number of the driver
- *                 taxiId:
+ *                 taxi:
  *                   type: string
- *                   example: "605c72ef1f1b2c001f8b4567"
- *                   description: The ID of the taxi assigned to the driver
+ *                   example: "605c72ef1f1b2c001f8b4568"
+ *                   description: The ID of the associated taxi
  *       404:
  *         description: Driver not found
  *         content:
@@ -460,6 +484,7 @@ router.get('/drivers', async (req, res) => {
  *                   type: string
  *                   example: "Failed to fetch driver"
  */
+
 router.get('/driver/:walletAddress', async (req, res) => {
     try {
         const walletAddress = req.params.walletAddress;
@@ -498,16 +523,20 @@ router.get('/driver/:walletAddress', async (req, res) => {
  *             properties:
  *               name:
  *                 type: string
- *                 example: "John Smith"
+ *                 example: "John Doe"
  *                 description: The name of the taxi owner
  *               walletAddress:
  *                 type: string
- *                 example: "0xabcdef1234567890abcdef1234567890abcdef12"
+ *                 example: "0x1234567890abcdef1234567890abcdef12345678"
  *                 description: The wallet address of the taxi owner
- *               phoneNumber:
+ *               phone:
  *                 type: string
  *                 example: "+1234567890"
  *                 description: The phone number of the taxi owner
+ *             required:
+ *               - name
+ *               - walletAddress
+ *               - phone
  *     responses:
  *       201:
  *         description: Successfully created a new taxi owner
@@ -518,17 +547,39 @@ router.get('/driver/:walletAddress', async (req, res) => {
  *               properties:
  *                 _id:
  *                   type: string
- *                   example: "605c72ef1f1b2c001f8b4567"
+ *                   example: "64b2d5f3429a1c6a8f99a2f8"
  *                   description: The unique ID of the newly created taxi owner
  *                 name:
  *                   type: string
- *                   example: "John Smith"
+ *                   example: "John Doe"
  *                 walletAddress:
  *                   type: string
- *                   example: "0xabcdef1234567890abcdef1234567890abcdef12"
- *                 phoneNumber:
+ *                   example: "0x1234567890abcdef1234567890abcdef12345678"
+ *                 phone:
  *                   type: string
  *                   example: "+1234567890"
+ *                 taxis:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     description: List of taxi IDs associated with the taxi owner
+ *                   example: []
+ *                 routes:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     description: List of route IDs associated with the taxi owner
+ *                   example: []
+ *       400:
+ *         description: Bad request due to missing required fields or invalid data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Missing required fields"
  *       500:
  *         description: An error occurred while creating the taxi owner
  *         content:
@@ -540,11 +591,13 @@ router.get('/driver/:walletAddress', async (req, res) => {
  *                   type: string
  *                   example: "Failed to create Taxi Boss"
  */
-
 router.post('/taxiowner', async (req, res) => {
     try{
-        const {name, walletAddress, phoneNumber} = req.body;
-        const newTaxiBoss = new TaxiOwner({name, walletAddress, phoneNumber});
+        const {name, walletAddress, phone} = req.body;
+        if (!name || !walletAddress || !phone) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+        const newTaxiBoss = new TaxiOwner({name, walletAddress, phone});
         const savedTaxiBoss = await newTaxiBoss.save();
         res.status(201).json(savedTaxiBoss);
     } catch (err) {
@@ -562,11 +615,11 @@ router.post('/taxiowner', async (req, res) => {
  *
  * /api/taxiowners:
  *   get:
- *     summary: Get all taxi owners
+ *     summary: Retrieve all taxi owners
  *     tags: [TaxiOwner]
  *     responses:
  *       200:
- *         description: Successfully retrieved the list of taxi owners
+ *         description: Successfully fetched all taxi owners
  *         content:
  *           application/json:
  *             schema:
@@ -576,20 +629,29 @@ router.post('/taxiowner', async (req, res) => {
  *                 properties:
  *                   _id:
  *                     type: string
- *                     example: "605c72ef1f1b2c001f8b4567"
+ *                     example: "64b2d5f3429a1c6a8f99a2f8"
  *                     description: The unique ID of the taxi owner
  *                   name:
  *                     type: string
- *                     example: "John Smith"
- *                     description: The name of the taxi owner
+ *                     example: "John Doe"
  *                   walletAddress:
  *                     type: string
- *                     example: "0xabcdef1234567890abcdef1234567890abcdef12"
- *                     description: The wallet address of the taxi owner
- *                   phoneNumber:
+ *                     example: "0x1234567890abcdef1234567890abcdef12345678"
+ *                   phone:
  *                     type: string
  *                     example: "+1234567890"
- *                     description: The phone number of the taxi owner
+ *                   taxis:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                       description: List of taxi IDs associated with the taxi owner
+ *                     example: []
+ *                   routes:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                       description: List of route IDs associated with the taxi owner
+ *                     example: []
  *       500:
  *         description: An error occurred while fetching taxi owners
  *         content:
@@ -612,68 +674,6 @@ router.get('/taxiowners', async (req, res) => {
 });
 
 // Get taxi owner by walletAddress
-/**
- * @swagger
- * tags:
- *   name: TaxiOwner
- *   description: API endpoints for managing taxi owners
- *
- * /api/taxiowner/{walletAddress}:
- *   get:
- *     summary: Get a taxi owner by wallet address
- *     tags: [TaxiOwner]
- *     parameters:
- *       - in: path
- *         name: walletAddress
- *         required: true
- *         schema:
- *           type: string
- *         description: The wallet address of the taxi owner to retrieve
- *     responses:
- *       200:
- *         description: Successfully retrieved the taxi owner
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                   example: "605c72ef1f1b2c001f8b4567"
- *                   description: The unique ID of the taxi owner
- *                 name:
- *                   type: string
- *                   example: "John Smith"
- *                   description: The name of the taxi owner
- *                 walletAddress:
- *                   type: string
- *                   example: "0xabcdef1234567890abcdef1234567890abcdef12"
- *                   description: The wallet address of the taxi owner
- *                 phoneNumber:
- *                   type: string
- *                   example: "+1234567890"
- *                   description: The phone number of the taxi owner
- *       404:
- *         description: Taxi owner not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Taxi Boss not found"
- *       500:
- *         description: An error occurred while fetching the taxi owner
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Failed to fetch Taxi Boss"
- */
 router.get('/taxiowner/:walletAddress', async (req, res) => {
     try {
         const walletAddress = req.params.walletAddress;
@@ -690,89 +690,6 @@ router.get('/taxiowner/:walletAddress', async (req, res) => {
 });
 
 //Create a new taxi
-/**
- * @swagger
- * tags:
- *   name: Taxi
- *   description: API endpoints for managing taxis
- *
- * /api/taxi:
- *   post:
- *     summary: Create a new taxi
- *     tags: [Taxi]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               licensePlate:
- *                 type: string
- *                 example: "ABC1234"
- *                 description: The license plate of the taxi
- *               taxiOwnerId:
- *                 type: string
- *                 example: "605c72ef1f1b2c001f8b4567"
- *                 description: The unique ID of the taxi owner
- *               routeId:
- *                 type: string
- *                 example: "605c72ef1f1b2c001f8b4568"
- *                 description: The unique ID of the route the taxi operates on
- *               driverId:
- *                 type: string
- *                 example: "605c72ef1f1b2c001f8b4569"
- *                 description: The unique ID of the driver assigned to the taxi
- *               type:
- *                 type: string
- *                 example: "Sedan"
- *                 description: The type of the taxi
- *               numberOfSeats:
- *                 type: integer
- *                 example: 4
- *                 description: The number of seats in the taxi
- *     responses:
- *       201:
- *         description: Successfully created a new taxi
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                   example: "605c72ef1f1b2c001f8b4567"
- *                   description: The unique ID of the newly created taxi
- *                 licensePlate:
- *                   type: string
- *                   example: "ABC1234"
- *                 taxiOwnerId:
- *                   type: string
- *                   example: "605c72ef1f1b2c001f8b4567"
- *                 routeId:
- *                   type: string
- *                   example: "605c72ef1f1b2c001f8b4568"
- *                 driverId:
- *                   type: string
- *                   example: "605c72ef1f1b2c001f8b4569"
- *                 type:
- *                   type: string
- *                   example: "Sedan"
- *                 numberOfSeats:
- *                   type: integer
- *                   example: 4
- *       500:
- *         description: An error occurred while creating the taxi
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Failed to create a new taxi"
- */
-
 router.post('/taxi', async (req, res) => {
     try{
         const {licensePlate, taxiOwnerId, routeId, driverId, type, numberOfSeats} = req.body;
@@ -786,77 +703,6 @@ router.post('/taxi', async (req, res) => {
 });
 
 // Create a new route
-/**
- * @swagger
- * tags:
- *   name: Route
- *   description: API endpoints for managing routes
- *
- * /api/route:
- *   post:
- *     summary: Create a new route
- *     tags: [Route]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               startPoint:
- *                 type: string
- *                 example: "Downtown"
- *                 description: The starting point of the route
- *               endPoint:
- *                 type: string
- *                 example: "Airport"
- *                 description: The ending point of the route
- *               price:
- *                 type: number
- *                 format: float
- *                 example: 25.5
- *                 description: The price of the route
- *               taxiOwnerId:
- *                 type: string
- *                 example: "605c72ef1f1b2c001f8b4567"
- *                 description: The unique ID of the taxi owner
- *     responses:
- *       201:
- *         description: Successfully created a new route
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                   example: "605c72ef1f1b2c001f8b4567"
- *                   description: The unique ID of the newly created route
- *                 startPoint:
- *                   type: string
- *                   example: "Downtown"
- *                 endPoint:
- *                   type: string
- *                   example: "Airport"
- *                 price:
- *                   type: number
- *                   format: float
- *                   example: 25.5
- *                 taxiOwnerId:
- *                   type: string
- *                   example: "605c72ef1f1b2c001f8b4567"
- *       500:
- *         description: An error occurred while creating the route
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Failed to create route"
- */
-
 router.post('/route', async (req, res) => {
     try {
         const {startPoint, endPoint, price, taxiOwnerId} = req.body;
@@ -870,77 +716,6 @@ router.post('/route', async (req, res) => {
 });
 
 // Create a new trip
-/**
- * @swagger
- * tags:
- *   name: Trip
- *   description: API endpoints for managing trips
- *
- * /api/trip:
- *   post:
- *     summary: Create a new trip
- *     tags: [Trip]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               passengerId:
- *                 type: string
- *                 example: "605c72ef1f1b2c001f8b4567"
- *                 description: The unique ID of the passenger
- *               taxiId:
- *                 type: string
- *                 example: "605c72ef1f1b2c001f8b4568"
- *                 description: The unique ID of the taxi
- *               routeId:
- *                 type: string
- *                 example: "605c72ef1f1b2c001f8b4569"
- *                 description: The unique ID of the route
- *               cost:
- *                 type: number
- *                 format: float
- *                 example: 15.75
- *                 description: The cost of the trip
- *     responses:
- *       201:
- *         description: Successfully created a new trip
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                   example: "605c72ef1f1b2c001f8b4570"
- *                   description: The unique ID of the newly created trip
- *                 passengerId:
- *                   type: string
- *                   example: "605c72ef1f1b2c001f8b4567"
- *                 taxiId:
- *                   type: string
- *                   example: "605c72ef1f1b2c001f8b4568"
- *                 routeId:
- *                   type: string
- *                   example: "605c72ef1f1b2c001f8b4569"
- *                 cost:
- *                   type: number
- *                   format: float
- *                   example: 15.75
- *       500:
- *         description: An error occurred while creating the trip
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Failed to create trip"
- */
-
 router.post('/trip', async (req, res) => {
     try{
         const {passengerId, taxiId, routeId, cost} = req.body;
