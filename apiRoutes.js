@@ -674,6 +674,77 @@ router.get('/taxiowners', async (req, res) => {
 });
 
 // Get taxi owner by walletAddress
+/**
+ * @swagger
+ * tags:
+ *   name: TaxiOwner
+ *   description: API endpoints for managing taxi owners
+ *
+ * /api/taxiowner/{walletAddress}:
+ *   get:
+ *     summary: Retrieve a taxi owner by wallet address
+ *     tags: [TaxiOwner]
+ *     parameters:
+ *       - in: path
+ *         name: walletAddress
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The wallet address of the taxi owner
+ *     responses:
+ *       200:
+ *         description: Successfully fetched the taxi owner
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   example: "64b2d5f3429a1c6a8f99a2f8"
+ *                   description: The unique ID of the taxi owner
+ *                 name:
+ *                   type: string
+ *                   example: "John Doe"
+ *                 walletAddress:
+ *                   type: string
+ *                   example: "0x1234567890abcdef1234567890abcdef12345678"
+ *                 phone:
+ *                   type: string
+ *                   example: "+1234567890"
+ *                 taxis:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     description: List of taxi IDs associated with the taxi owner
+ *                   example: []
+ *                 routes:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     description: List of route IDs associated with the taxi owner
+ *                   example: []
+ *       404:
+ *         description: Taxi owner not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Taxi Boss not found"
+ *       500:
+ *         description: An error occurred while fetching the taxi owner
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to fetch Taxi Boss"
+ */
 router.get('/taxiowner/:walletAddress', async (req, res) => {
     try {
         const walletAddress = req.params.walletAddress;
@@ -689,7 +760,95 @@ router.get('/taxiowner/:walletAddress', async (req, res) => {
     }
 });
 
+
 //Create a new taxi
+/**
+ * @swagger
+ * tags:
+ *   name: Taxi
+ *   description: API endpoints for managing taxis
+ *
+ * /api/taxi:
+ *   post:
+ *     summary: Create a new taxi
+ *     tags: [Taxi]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               licensePlate:
+ *                 type: string
+ *                 example: "ABC1234"
+ *                 description: The license plate of the taxi
+ *               taxiOwnerId:
+ *                 type: string
+ *                 example: "64b2d5f3429a1c6a8f99a2f8"
+ *                 description: The ID of the taxi owner
+ *               driverId:
+ *                 type: string
+ *                 example: "64b2d5f3429a1c6a8f99a2f9"
+ *                 description: The ID of the driver
+ *               routeId:
+ *                 type: string
+ *                 example: "64b2d5f3429a1c6a8f99a2f7"
+ *                 description: The ID of the route
+ *               type:
+ *                 type: string
+ *                 example: "Sedan"
+ *                 description: The type of the taxi
+ *               numberOfSeats:
+ *                 type: integer
+ *                 example: 4
+ *                 description: The number of seats in the taxi
+ *             required:
+ *               - licensePlate
+ *               - taxiOwnerId
+ *               - type
+ *               - numberOfSeats
+ *     responses:
+ *       201:
+ *         description: Successfully created a new taxi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   example: "64b2d5f3429a1c6a8f99a2f6"
+ *                   description: The unique ID of the newly created taxi
+ *                 licensePlate:
+ *                   type: string
+ *                   example: "ABC1234"
+ *                 taxiOwnerId:
+ *                   type: string
+ *                   example: "64b2d5f3429a1c6a8f99a2f8"
+ *                 driverId:
+ *                   type: string
+ *                   example: "64b2d5f3429a1c6a8f99a2f9"
+ *                 routeId:
+ *                   type: string
+ *                   example: "64b2d5f3429a1c6a8f99a2f7"
+ *                 type:
+ *                   type: string
+ *                   example: "Sedan"
+ *                 numberOfSeats:
+ *                   type: integer
+ *                   example: 4
+ *       500:
+ *         description: An error occurred while creating the taxi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to create a new taxi"
+ */
 router.post('/taxi', async (req, res) => {
     try{
         const {licensePlate, taxiOwnerId, routeId, driverId, type, numberOfSeats} = req.body;
@@ -702,11 +861,237 @@ router.post('/taxi', async (req, res) => {
     }
 });
 
+// Get taxis by license plate
+/**
+ * @swagger
+ * tags:
+ *   name: Taxi
+ *   description: API endpoints for managing taxis
+ *
+ * /api/taxi/{licensePlate}:
+ *   get:
+ *     summary: Retrieve a taxi by license plate
+ *     tags: [Taxi]
+ *     parameters:
+ *       - in: path
+ *         name: licensePlate
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The license plate of the taxi
+ *     responses:
+ *       200:
+ *         description: Successfully fetched the taxi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   example: "64b2d5f3429a1c6a8f99a2f6"
+ *                   description: The unique ID of the taxi
+ *                 licensePlate:
+ *                   type: string
+ *                   example: "ABC1234"
+ *                 taxiOwnerId:
+ *                   type: string
+ *                   example: "64b2d5f3429a1c6a8f99a2f8"
+ *                 driverId:
+ *                   type: string
+ *                   example: "64b2d5f3429a1c6a8f99a2f9"
+ *                 routeId:
+ *                   type: string
+ *                   example: "64b2d5f3429a1c6a8f99a2f7"
+ *                 type:
+ *                   type: string
+ *                   example: "Sedan"
+ *                 numberOfSeats:
+ *                   type: integer
+ *                   example: 4
+ *       404:
+ *         description: Taxi not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Taxi not found"
+ *       500:
+ *         description: An error occurred while fetching the taxi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to fetch taxi"
+ */
+router.get('/taxi/:licensePlate', async (req, res) => {
+    try {
+        const licensePlate = req.params.licensePlate;
+        const taxi = await Taxi
+        .findOne({licensePlate: licensePlate});
+        if (!taxi) {
+            return res.status(404).json({error: "Taxi not found"});
+        }
+        res.status(200).json(taxi);
+    } catch (err) {
+        console.error("Error fetching taxi",err);
+        res.status(500).json({error: "Failed to fetch taxi"});
+    }
+});
+
+// Get all taxis
+/**
+ * @swagger
+ * tags:
+ *   name: Taxi
+ *   description: API endpoints for managing taxis
+ *
+ * /api/taxis:
+ *   get:
+ *     summary: Retrieve all taxis
+ *     tags: [Taxi]
+ *     responses:
+ *       200:
+ *         description: Successfully fetched all taxis
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: "64b2d5f3429a1c6a8f99a2f6"
+ *                     description: The unique ID of the taxi
+ *                   licensePlate:
+ *                     type: string
+ *                     example: "ABC1234"
+ *                   taxiOwnerId:
+ *                     type: string
+ *                     example: "64b2d5f3429a1c6a8f99a2f8"
+ *                   driverId:
+ *                     type: string
+ *                     example: "64b2d5f3429a1c6a8f99a2f9"
+ *                   routeId:
+ *                     type: string
+ *                     example: "64b2d5f3429a1c6a8f99a2f7"
+ *                   type:
+ *                     type: string
+ *                     example: "Sedan"
+ *                   numberOfSeats:
+ *                     type: integer
+ *                     example: 4
+ *       500:
+ *         description: An error occurred while fetching taxis
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to fetch taxis"
+ */
+router.get('/taxis', async (req, res) => {
+    try {
+        const taxis = await Taxi.find();
+        res.status(200).json(taxis);
+    } catch (err) {
+        console.error("Error fetching taxis",err);
+        res.status(500).json({error: "Failed to fetch taxis"});
+    }
+});
+
+
+
 // Create a new route
+/**
+ * @swagger
+ * tags:
+ *   name: Route
+ *   description: API endpoints for managing routes
+ *
+ * /api/route:
+ *   post:
+ *     summary: Create a new route
+ *     tags: [Route]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               startLocation:
+ *                 type: string
+ *                 example: "Downtown"
+ *                 description: The starting location of the route
+ *               endLocation:
+ *                 type: string
+ *                 example: "Airport"
+ *                 description: The ending location of the route
+ *               cost:
+ *                 type: number
+ *                 example: 25.50
+ *                 description: The cost of the route
+ *               taxiBossId:
+ *                 type: string
+ *                 example: "64b2d5f3429a1c6a8f99a2f8"
+ *                 description: The ID of the taxi boss managing this route
+ *             required:
+ *               - startLocation
+ *               - endLocation
+ *               - cost
+ *               - taxiBossId
+ *     responses:
+ *       201:
+ *         description: Successfully created a new route
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   example: "64b2d5f3429a1c6a8f99a2f6"
+ *                   description: The unique ID of the newly created route
+ *                 startLocation:
+ *                   type: string
+ *                   example: "Downtown"
+ *                 endLocation:
+ *                   type: string
+ *                   example: "Airport"
+ *                 cost:
+ *                   type: number
+ *                   example: 25.50
+ *                 taxiBossId:
+ *                   type: string
+ *                   example: "64b2d5f3429a1c6a8f99a2f8"
+ *       500:
+ *         description: An error occurred while creating the route
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to create route"
+ */
 router.post('/route', async (req, res) => {
     try {
-        const {startPoint, endPoint, price, taxiOwnerId} = req.body;
-        const newRoute = new Route({startPoint, endPoint, price, taxiOwnerId});
+        const {startLocation, endLocation, cost, taxiBossId} = req.body;
+        if (!startLocation || !endLocation || !cost || !taxiBossId) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+        const newRoute = new Route({startLocation, endLocation, cost, taxiBossId});
         const savedRoute = await newRoute.save();
         res.status(201).json(savedRoute);
     } catch (err) {
@@ -714,6 +1099,70 @@ router.post('/route', async (req, res) => {
         res.status(500).json({error: "Failed to create route"});
     }
 });
+
+// Get all routes
+/**
+ * @swagger
+ * tags:
+ *   name: Route
+ *   description: API endpoints for managing routes
+ *
+ * /api/routes:
+ *   get:
+ *     summary: Retrieve all routes
+ *     tags: [Route]
+ *     responses:
+ *       200:
+ *         description: Successfully fetched all routes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: "64b2d5f3429a1c6a8f99a2f6"
+ *                     description: The unique ID of the route
+ *                   startLocation:
+ *                     type: string
+ *                     example: "Downtown"
+ *                     description: The starting location of the route
+ *                   endLocation:
+ *                     type: string
+ *                     example: "Airport"
+ *                     description: The ending location of the route
+ *                   cost:
+ *                     type: number
+ *                     example: 25.50
+ *                     description: The cost of the route
+ *                   taxiBossId:
+ *                     type: string
+ *                     example: "64b2d5f3429a1c6a8f99a2f8"
+ *                     description: The ID of the taxi boss managing this route
+ *       500:
+ *         description: An error occurred while fetching routes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to fetch routes"
+ */
+router.get('/routes', async (req, res) => {
+    try {
+        const routes = await Route.find();
+        res.status(200).json(routes);
+    } catch (err) {
+        console.error("Error fetching routes",err);
+        res.status(500).json({error: "Failed to fetch routes"});
+    }
+});
+
+
 
 // Create a new trip
 router.post('/trip', async (req, res) => {
