@@ -13,8 +13,14 @@ const Home = () => {
               Create Passenger
             
           </Link>
-          
+         
           {/* Other links can go here */}
+          <Link href="/create-driver">
+              Create Driver
+          </Link>
+          <Link href="/create-taxi-owner">
+              Create Taxi Owner
+          </Link>
         </div>
       </div>
     </div>

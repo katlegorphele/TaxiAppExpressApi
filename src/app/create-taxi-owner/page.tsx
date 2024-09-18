@@ -2,10 +2,9 @@
 
 import { useState } from 'react';
 
-const CreatePassenger = () => {
+const CreateTaxiOwner = () => {
   const [name, setName] = useState('');
   const [walletAddress, setWalletAddress] = useState('');
-  const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -20,21 +19,20 @@ const CreatePassenger = () => {
     setLoading(true);
 
     // Prepare the data to be sent
-    const passengerData = {
+    const taxiOwnerData = {
       name,
       walletAddress,
-      email,
       phoneNumber, // Include phone number
     };
 
     try {
       // Make the POST request
-      const response = await fetch('http://localhost:3001/api/passenger', {
+      const response = await fetch('http://localhost:3001/api/taxiowner', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(passengerData),
+        body: JSON.stringify(taxiOwnerData),
       });
 
       // Handle the response
@@ -42,11 +40,11 @@ const CreatePassenger = () => {
         setSuccess(true);
         setName('');
         setWalletAddress('');
-        setEmail('');
         setPhoneNumber(''); // Clear phone number
       } else {
         const errorResponse = await response.json();
-        setError(errorResponse.message || 'Failed to create passenger');
+        console.log(errorResponse);
+        setError(errorResponse.message || 'Failed to create taxi owner');
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
@@ -58,7 +56,7 @@ const CreatePassenger = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center text-black">
       <div className="bg-white p-10 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center mb-4">Create Passenger</h1>
+        <h1 className="text-2xl font-bold text-center mb-4">Create Taxi Owner</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block mb-2">Name:</label>
@@ -76,16 +74,6 @@ const CreatePassenger = () => {
               type="text"
               value={walletAddress}
               onChange={(e) => setWalletAddress(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md"
-              required
-            />
-          </div>
-          <div>
-            <label className="block mb-2">Email:</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-md"
               required
             />
@@ -116,4 +104,4 @@ const CreatePassenger = () => {
   );
 };
 
-export default CreatePassenger;
+export default CreateTaxiOwner;
