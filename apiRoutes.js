@@ -593,11 +593,11 @@ router.get('/driver/:walletAddress', async (req, res) => {
  */
 router.post('/taxiowner', async (req, res) => {
     try{
-        const {name, walletAddress, phone} = req.body;
-        if (!name || !walletAddress || !phone) {
+        const {name, walletAddress, phoneNumber} = req.body;
+        if (!name || !walletAddress || !phoneNumber) {
             return res.status(400).json({ error: "Missing required fields" });
         }
-        const newTaxiBoss = new TaxiOwner({name, walletAddress, phone});
+        const newTaxiBoss = new TaxiOwner({name, walletAddress, phone:phoneNumber});
         const savedTaxiBoss = await newTaxiBoss.save();
         res.status(201).json(savedTaxiBoss);
     } catch (err) {
