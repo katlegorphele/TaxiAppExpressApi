@@ -90,7 +90,7 @@ const CreateTaxiOwner = () => {
           </div>
           {loading && <p className="text-blue-500">Submitting...</p>}
           {error && <p className="text-red-500">{error}</p>}
-          {success && <p className="text-green-500">Passenger created successfully!</p>}
+          {success && <p className="text-green-500">Taxi Owner created successfully!</p>}
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-700"
